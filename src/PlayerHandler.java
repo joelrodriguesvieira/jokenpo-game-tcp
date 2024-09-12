@@ -9,7 +9,7 @@ import Enums.MensagemEnum;
 class PlayerHandler implements Runnable {
     private Socket socket;
     private String jogador;
-    private Jogada jogada;  // Jogada sem AtomicReference
+    private Jogada jogada;
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
@@ -27,19 +27,17 @@ class PlayerHandler implements Runnable {
             boolean jogadaValida = false;
 
             while (!jogadaValida) {
-                out.writeObject("Faça sua jogada (Pedra, Papel ou Tesoura):");
+            	out.writeObject(MensagemEnum.COMANDOJOGADA.getMensagem());
                 out.flush();
 
                 try {
-                	JogadaEnum escolha = (JogadaEnum) in.readObject();  // Converter para JogadaEnum
+                	JogadaEnum escolha = (JogadaEnum) in.readObject();
 
-                    // Se a conversão foi bem-sucedida, configurar a jogada
                     jogada.setJogador(jogador);
-                    jogada.setEscolha(escolha);  // Usar JogadaEnum diretamente
+                    jogada.setEscolha(escolha);
                     jogadaValida = true;
 
                 } catch (IllegalArgumentException e) {
-                    // Caso o jogador digite algo inválido, reenviar mensagem de erro
                 	out.writeObject(MensagemEnum.JOGADAINVALIDA.getMensagem());
                     out.writeObject(MensagemEnum.COMANDOJOGADA.getMensagem());
                     out.flush();
