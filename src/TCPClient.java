@@ -6,6 +6,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Enums.MensagemEnum;
+
 public class TCPClient {
     private static final String SERVER_ADDRESS = "10.28.6.27";
     private static final int SERVER_PORT = 80;
@@ -23,11 +25,11 @@ public class TCPClient {
                     if (serverMessage == null) break;
                     System.out.println("Server: " + serverMessage);
                     
-                    if (serverMessage.toString().contains("Faça sua jogada")) {
+                    if (serverMessage.equals(MensagemEnum.COMANDOJOGADA.getMensagem())) {
                         String jogadaEscolha = consoleInput.readLine();
                         output.writeObject(jogadaEscolha);
                         output.flush();
-                    } else if (serverMessage.toString().contains("Você gostaria de jogar novamente?")) {
+                    } else if (serverMessage.equals(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem())) {
                         String resposta = consoleInput.readLine();
                         output.writeObject(resposta);
                         output.flush();

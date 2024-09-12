@@ -2,11 +2,13 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import Enums.MensagemEnum;
+
 public class TCPServer {
     private static final int PORT = 80;
     private static AtomicReference<Jogada> jogada1 = new AtomicReference<>();
     private static AtomicReference<Jogada> jogada2 = new AtomicReference<>();
-
+    
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Aguardando jogadores...");
@@ -44,8 +46,8 @@ public class TCPServer {
                 enviarResultado(outPlayer2, resultado, jogada1.get(), jogada2.get());
 
                 // Perguntar aos jogadores se querem jogar novamente
-                outPlayer1.writeObject("Você gostaria de jogar novamente? (Sim/Não)");
-                outPlayer2.writeObject("Você gostaria de jogar novamente? (Sim/Não)");
+                outPlayer1.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem());
+                outPlayer2.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem());
                 outPlayer1.flush();
                 outPlayer2.flush();
 
@@ -55,15 +57,16 @@ public class TCPServer {
 
                 // Verificar se ambos os jogadores querem continuar
                 jogarNovamente = resposta1.equalsIgnoreCase("sim") && resposta2.equalsIgnoreCase("sim");
-                
+
                 if (!jogarNovamente) {
                     if (resposta1.equalsIgnoreCase("sim") && resposta2.equalsIgnoreCase("não")) {
-                        outPlayer1.writeObject("O outro jogador não quis jogar novamente.");
+                    	outPlayer1.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
                         outPlayer1.flush();
                     } else if (resposta2.equalsIgnoreCase("sim") && resposta1.equalsIgnoreCase("não")) {
-                        outPlayer2.writeObject("O outro jogador não quis jogar novamente.");
+                        outPlayer2.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
                         outPlayer2.flush();
                     }
+
                 } else {
                 	// Reiniciar estado das jogadas
                 	jogada1.set(null);
@@ -81,8 +84,8 @@ public class TCPServer {
             }
 
             // Enviar mensagem de encerramento
-            outPlayer1.writeObject("O jogo terminou. Até a próxima!");
-            outPlayer2.writeObject("O jogo terminou. Até a próxima!");
+            outPlayer1.writeObject(MensagemEnum.MESSAGEMFINAL.getMensagem());
+            outPlayer2.writeObject(MensagemEnum.MESSAGEMFINAL.getMensagem());
             outPlayer1.flush();
             outPlayer2.flush();
 
@@ -97,20 +100,24 @@ public class TCPServer {
 
     private static String determinarVencedor(Jogada jogada1, Jogada jogada2) {
         if (jogada1 == null || jogada2 == null) {
-            return "Jogada inválida. Ambos os jogadores devem fazer uma jogada.";
+            return MensagemEnum.JOGADAINVALIDAJOGADORES.getMensagem();
         }
         if (jogada1.getEscolha().equalsIgnoreCase(jogada2.getEscolha())) {
+        	// enum jogada aqui
             return "Empate!";
         }
         switch (jogada1.getEscolha().toLowerCase()) {
+        // enum jogada aqui
             case "pedra":
                 return jogada2.getEscolha().equalsIgnoreCase("tesoura") ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
+             // enum jogada aqui
             case "papel":
                 return jogada2.getEscolha().equalsIgnoreCase("pedra") ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
+             // enum jogada aqui
             case "tesoura":
                 return jogada2.getEscolha().equalsIgnoreCase("papel") ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
             default:
-                return "Jogada inválida.";
+                return MensagemEnum.JOGADAINVALIDA.getMensagem();
         }
     }
 
@@ -120,7 +127,7 @@ public class TCPServer {
             out.writeObject("Jogada do " + jogada2.getJogador() + ": " + jogada2.getEscolha());
             out.writeObject(resultado);
         } else {
-            out.writeObject("Jogo não pôde ser completado.");
+            out.writeObject(MensagemEnum.JOGOINCOMPLETO.getMensagem());
         }
         out.flush();
     }
