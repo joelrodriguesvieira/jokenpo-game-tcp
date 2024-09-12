@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import Enums.MensagemEnum;
+import Enums.RespostaEnum;
 
 public class TCPClient {
     private static final String SERVER_ADDRESS = "localhost";
@@ -30,7 +31,14 @@ public class TCPClient {
                         output.writeObject(jogadaEscolha);
                         output.flush();
                     } else if (serverMessage.equals(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem())) {
-                        String resposta = consoleInput.readLine();
+                        String respostaString = consoleInput.readLine();
+                        
+                        RespostaEnum resposta;
+                        if(respostaString.equals("sim")) {
+                        	resposta = RespostaEnum.SIM;
+                        } else {
+                        	resposta = RespostaEnum.NAO;
+                        }
                         output.writeObject(resposta);
                         output.flush();
                     }

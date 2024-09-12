@@ -1,7 +1,11 @@
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import Enums.MensagemEnum;
+import Enums.RespostaEnum;
 
 public class TCPServer {
     private static final int PORT = 80;
@@ -52,17 +56,17 @@ public class TCPServer {
                 outPlayer2.flush();
 
                 // Coletar respostas dos dois jogadores
-                String resposta1 = (String) inPlayer1.readObject();
-                String resposta2 = (String) inPlayer2.readObject();
+                RespostaEnum resposta1 = (RespostaEnum) inPlayer1.readObject();
+                RespostaEnum resposta2 = (RespostaEnum) inPlayer2.readObject();
 
                 // Verificar se ambos os jogadores querem continuar
-                jogarNovamente = resposta1.equalsIgnoreCase("sim") && resposta2.equalsIgnoreCase("sim");
+                jogarNovamente = resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.SIM;
 
                 if (!jogarNovamente) {
-                    if (resposta1.equalsIgnoreCase("sim") && resposta2.equalsIgnoreCase("não")) {
-                    	outPlayer1.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
+                    if (resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.NAO) {
+                        outPlayer1.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
                         outPlayer1.flush();
-                    } else if (resposta2.equalsIgnoreCase("sim") && resposta1.equalsIgnoreCase("não")) {
+                    } else if (resposta2 == RespostaEnum.SIM && resposta1 == RespostaEnum.NAO) {
                         outPlayer2.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
                         outPlayer2.flush();
                     }
