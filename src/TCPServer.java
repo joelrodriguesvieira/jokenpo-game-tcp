@@ -64,10 +64,10 @@ public class TCPServer {
                 jogarNovamente = resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.SIM;
 
                 if (!jogarNovamente) {
-                    if (resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.NAO) {
+                    if (resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.NÃO) {
                         outPlayer1.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
                         outPlayer1.flush();
-                    } else if (resposta2 == RespostaEnum.SIM && resposta1 == RespostaEnum.NAO) {
+                    } else if (resposta2 == RespostaEnum.SIM && resposta1 == RespostaEnum.NÃO) {
                         outPlayer2.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
                         outPlayer2.flush();
                     }

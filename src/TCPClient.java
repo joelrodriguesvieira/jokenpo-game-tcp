@@ -43,16 +43,20 @@ public class TCPClient {
                             }
                         }
                     } else if (serverMessage.equals(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem())) {
-                        String respostaString = consoleInput.readLine();
-                        
-                        RespostaEnum resposta;
-                        if(respostaString.equals("sim")) {
-                        	resposta = RespostaEnum.SIM;
-                        } else {
-                        	resposta = RespostaEnum.NAO;
-                        }
-                        output.writeObject(resposta);
-                        output.flush();
+                    	String respostaString;
+                    	RespostaEnum respostaEnum = null;
+                    	while(respostaEnum == null) {
+                    		respostaString = consoleInput.readLine().toUpperCase();
+                    		
+                    		try {
+                    			respostaEnum = RespostaEnum.valueOf(respostaString);
+                    			output.writeObject(respostaEnum);
+                    			output.flush();
+								
+							} catch (IllegalArgumentException e) {
+								System.out.println("Resposta inválida. Escolha entre SIM ou NÃO.");
+							}
+                    	}    
                     }
                 } catch (EOFException e) {
                     System.out.println("Conexão encerrada pelo servidor.");
