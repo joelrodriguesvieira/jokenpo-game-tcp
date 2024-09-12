@@ -1,14 +1,16 @@
 import java.io.Serializable;
 
+import Enums.JogadaEnum;
+
 public class Jogada implements Serializable {
     private static final long serialVersionUID = 1L;
     private String jogador;
-    private String escolha;
+    private JogadaEnum escolha;
 
     // Construtor com parâmetros
-    public Jogada(String jogador, String escolha) {
+    public Jogada(String jogador, JogadaEnum escolha) {
         this.jogador = jogador;
-        setEscolha(escolha); // Use o setter para aplicar validação
+        this.escolha = escolha;
     }
 
     // Construtor padrão
@@ -25,13 +27,13 @@ public class Jogada implements Serializable {
         this.jogador = jogador;
     }
 
-    public String getEscolha() {
+    public JogadaEnum getEscolha() {
         return escolha;
     }
 
-    public void setEscolha(String escolha) {
+    public void setEscolha(JogadaEnum escolha) {
         // Normaliza a escolha para minúsculas e armazena
-        this.escolha = escolha != null ? escolha.toLowerCase() : null;
+        this.escolha = escolha;
     }
 
     // Método para validar se a escolha é válida

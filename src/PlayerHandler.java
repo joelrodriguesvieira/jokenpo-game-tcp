@@ -3,6 +3,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Enums.JogadaEnum;
+
 class PlayerHandler implements Runnable {
     private Socket socket;
     private String jogador;
@@ -27,14 +29,17 @@ class PlayerHandler implements Runnable {
                 out.writeObject("Faça sua jogada (Pedra, Papel ou Tesoura):");
                 out.flush();
 
-                String escolha = ((String) in.readObject()).toLowerCase();
+                try {
+                	JogadaEnum escolha = (JogadaEnum) in.readObject();  // Converter para JogadaEnum
 
-                if (escolha.equals("pedra") || escolha.equals("papel") || escolha.equals("tesoura")) {
+                    // Se a conversão foi bem-sucedida, configurar a jogada
                     jogada.setJogador(jogador);
-                    jogada.setEscolha(escolha);
+                    jogada.setEscolha(escolha);  // Usar JogadaEnum diretamente
                     jogadaValida = true;
-                } else {
-                    out.writeObject("Jogada inválida. Por favor, escolha entre Pedra, Papel ou Tesoura.");
+
+                } catch (IllegalArgumentException e) {
+                    // Caso o jogador digite algo inválido, reenviar mensagem de erro
+                    out.writeObject("Jogada inválida. Por favor, escolha entre PEDRA, PAPEL ou TESOURA.");
                     out.flush();
                 }
             }

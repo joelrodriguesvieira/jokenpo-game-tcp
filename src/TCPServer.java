@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import Enums.JogadaEnum;
 import Enums.MensagemEnum;
 import Enums.RespostaEnum;
 
@@ -106,23 +107,25 @@ public class TCPServer {
         if (jogada1 == null || jogada2 == null) {
             return MensagemEnum.JOGADAINVALIDAJOGADORES.getMensagem();
         }
-        if (jogada1.getEscolha().equalsIgnoreCase(jogada2.getEscolha())) {
+        
+        JogadaEnum escolha1 = jogada1.getEscolha();
+        JogadaEnum escolha2 = jogada2.getEscolha();
+        
+        if (escolha1 == escolha2) {
         	// enum jogada aqui
             return "Empate!";
         }
-        switch (jogada1.getEscolha().toLowerCase()) {
-        // enum jogada aqui
-            case "pedra":
-                return jogada2.getEscolha().equalsIgnoreCase("tesoura") ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
-             // enum jogada aqui
-            case "papel":
-                return jogada2.getEscolha().equalsIgnoreCase("pedra") ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
-             // enum jogada aqui
-            case "tesoura":
-                return jogada2.getEscolha().equalsIgnoreCase("papel") ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
-            default:
-                return MensagemEnum.JOGADAINVALIDA.getMensagem();
-        }
+        
+        switch (escolha1) {
+        case PEDRA:
+            return (escolha2 == JogadaEnum.TESOURA) ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
+        case PAPEL:
+            return (escolha2 == JogadaEnum.PEDRA) ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
+        case TESOURA:
+            return (escolha2 == JogadaEnum.PAPEL) ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
+        default:
+            return MensagemEnum.JOGADAINVALIDA.getMensagem();
+    }
     }
 
     private static void enviarResultado(ObjectOutputStream out, String resultado, Jogada jogada1, Jogada jogada2) throws IOException {
