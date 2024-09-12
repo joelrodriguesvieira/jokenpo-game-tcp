@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import Enums.JogadaEnum;
+import Enums.MensagemEnum;
 
 class PlayerHandler implements Runnable {
     private Socket socket;
@@ -39,7 +40,8 @@ class PlayerHandler implements Runnable {
 
                 } catch (IllegalArgumentException e) {
                     // Caso o jogador digite algo inválido, reenviar mensagem de erro
-                    out.writeObject("Jogada inválida. Por favor, escolha entre PEDRA, PAPEL ou TESOURA.");
+                	out.writeObject(MensagemEnum.JOGADAINVALIDA.getMensagem());
+                    out.writeObject(MensagemEnum.COMANDOJOGADA.getMensagem());
                     out.flush();
                 }
             }
