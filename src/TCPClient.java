@@ -9,7 +9,7 @@ import java.net.Socket;
 import Enums.MensagemEnum;
 
 public class TCPClient {
-    private static final String SERVER_ADDRESS = "10.28.6.27";
+    private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 80;
 
     public static void main(String[] args) {

@@ -7,7 +7,7 @@ public enum MensagemEnum {
 	JOGADAINVALIDAJOGADORES ("Jogada inválida. Ambos os jogadores devem fazer uma jogada."),
 	JOGOINCOMPLETO			("Jogo não pôde ser completado."),
 	JOGADAINVALIDA			("Jogada inválida"),
-	COMANDOJOGADA			("Faça sua jogada");
+	COMANDOJOGADA			("Faça sua jogada (Pedra, Papel ou Tesoura):");
 	
 	private final String mensagem;
 
