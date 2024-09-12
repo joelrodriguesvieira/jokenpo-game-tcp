@@ -31,12 +31,12 @@ public class TCPClient {
                     	String jogadaEscolha;
                         JogadaEnum jogadaEnum = null;
                         
-                        while (jogadaEnum == null) {  // Loop até uma jogada válida ser inserida
-                            jogadaEscolha = consoleInput.readLine().toUpperCase();  // Converte para maiúsculas
+                        while (jogadaEnum == null) {
+                            jogadaEscolha = consoleInput.readLine().toUpperCase();
                             
                             try {
                                 jogadaEnum = JogadaEnum.valueOf(jogadaEscolha);
-                                output.writeObject(jogadaEnum);  // Envia o enum para o servidor
+                                output.writeObject(jogadaEnum);
                                 output.flush();
                             } catch (IllegalArgumentException e) {
                                 System.out.println("Jogada inválida. Escolha entre PEDRA, PAPEL ou TESOURA.");
