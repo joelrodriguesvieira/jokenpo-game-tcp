@@ -1,14 +1,14 @@
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import Enums.MensagemEnum;
 
 public class TCPServer {
     private static final int PORT = 80;
-    private static AtomicReference<Jogada> jogada1 = new AtomicReference<>();
-    private static AtomicReference<Jogada> jogada2 = new AtomicReference<>();
-    
+   
+    private static Jogada jogada1 = new Jogada();
+    private static Jogada jogada2 = new Jogada();
+
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Aguardando jogadores...");
@@ -41,9 +41,9 @@ public class TCPServer {
                 player2Thread.join();
 
                 // Determinar o vencedor e enviar o resultado
-                String resultado = determinarVencedor(jogada1.get(), jogada2.get());
-                enviarResultado(outPlayer1, resultado, jogada1.get(), jogada2.get());
-                enviarResultado(outPlayer2, resultado, jogada1.get(), jogada2.get());
+                String resultado = determinarVencedor(jogada1, jogada2);
+                enviarResultado(outPlayer1, resultado, jogada1, jogada2);
+                enviarResultado(outPlayer2, resultado, jogada1, jogada2);
 
                 // Perguntar aos jogadores se querem jogar novamente
                 outPlayer1.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem());
@@ -69,15 +69,15 @@ public class TCPServer {
 
                 } else {
                 	// Reiniciar estado das jogadas
-                	jogada1.set(null);
-                	jogada2.set(null);
-                		
-                	// Reiniciar as threads para capturar novas jogadas
-                	player1Thread = new Thread(new PlayerHandler(player1Socket, "Jogador 1", jogada1, outPlayer1, inPlayer1));
-                	player2Thread = new Thread(new PlayerHandler(player2Socket, "Jogador 2", jogada2, outPlayer2, inPlayer2));
-                		
-                	player1Thread.start();
-                	player2Thread.start();
+                    jogada1 = new Jogada();
+                    jogada2 = new Jogada();
+
+                    // Reiniciar as threads para capturar novas jogadas
+                    player1Thread = new Thread(new PlayerHandler(player1Socket, "Jogador 1", jogada1, outPlayer1, inPlayer1));
+                    player2Thread = new Thread(new PlayerHandler(player2Socket, "Jogador 2", jogada2, outPlayer2, inPlayer2));
+
+                    player1Thread.start();
+                    player2Thread.start();
                 	
                 }
 
