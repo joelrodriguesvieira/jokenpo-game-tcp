@@ -55,19 +55,29 @@ public class TCPServer {
 
                 // Verificar se ambos os jogadores querem continuar
                 jogarNovamente = resposta1.equalsIgnoreCase("sim") && resposta2.equalsIgnoreCase("sim");
-
-                if (jogarNovamente) {
-                    // Reiniciar estado das jogadas
-                    jogada1.set(null);
-                    jogada2.set(null);
-
-                    // Reiniciar as threads para capturar novas jogadas
-                    player1Thread = new Thread(new PlayerHandler(player1Socket, "Jogador 1", jogada1, outPlayer1, inPlayer1));
-                    player2Thread = new Thread(new PlayerHandler(player2Socket, "Jogador 2", jogada2, outPlayer2, inPlayer2));
-
-                    player1Thread.start();
-                    player2Thread.start();
+                
+                if (!jogarNovamente) {
+                    if (resposta1.equalsIgnoreCase("sim") && resposta2.equalsIgnoreCase("não")) {
+                        outPlayer1.writeObject("O outro jogador não quis jogar novamente.");
+                        outPlayer1.flush();
+                    } else if (resposta2.equalsIgnoreCase("sim") && resposta1.equalsIgnoreCase("não")) {
+                        outPlayer2.writeObject("O outro jogador não quis jogar novamente.");
+                        outPlayer2.flush();
+                    }
+                } else {
+                	// Reiniciar estado das jogadas
+                	jogada1.set(null);
+                	jogada2.set(null);
+                		
+                	// Reiniciar as threads para capturar novas jogadas
+                	player1Thread = new Thread(new PlayerHandler(player1Socket, "Jogador 1", jogada1, outPlayer1, inPlayer1));
+                	player2Thread = new Thread(new PlayerHandler(player2Socket, "Jogador 2", jogada2, outPlayer2, inPlayer2));
+                		
+                	player1Thread.start();
+                	player2Thread.start();
+                	
                 }
+
             }
 
             // Enviar mensagem de encerramento
