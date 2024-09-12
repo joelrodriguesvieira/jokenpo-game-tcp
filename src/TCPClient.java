@@ -28,11 +28,20 @@ public class TCPClient {
                     System.out.println("Server: " + serverMessage);
                     
                     if (serverMessage.equals(MensagemEnum.COMANDOJOGADA.getMensagem())) {
-                        String jogadaEscolha = consoleInput.readLine().toUpperCase();
+                    	String jogadaEscolha;
+                        JogadaEnum jogadaEnum = null;
                         
-                        JogadaEnum jogadaEnum = JogadaEnum.valueOf(jogadaEscolha);
-                        output.writeObject(jogadaEnum);
-                        output.flush();
+                        while (jogadaEnum == null) {  // Loop até uma jogada válida ser inserida
+                            jogadaEscolha = consoleInput.readLine().toUpperCase();  // Converte para maiúsculas
+                            
+                            try {
+                                jogadaEnum = JogadaEnum.valueOf(jogadaEscolha);
+                                output.writeObject(jogadaEnum);  // Envia o enum para o servidor
+                                output.flush();
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Jogada inválida. Escolha entre PEDRA, PAPEL ou TESOURA.");
+                            }
+                        }
                     } else if (serverMessage.equals(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem())) {
                         String respostaString = consoleInput.readLine();
                         
