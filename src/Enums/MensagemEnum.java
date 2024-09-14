@@ -9,13 +9,9 @@ public enum MensagemEnum {
 	JOGADAINVALIDA			("Jogada inválida"),
 	COMANDOJOGADA			("Faça sua jogada (Pedra, Papel ou Tesoura):");
 	
-	private final String mensagem;
+	public final String mensagem;
 
 	MensagemEnum(String mensagem) {
 		this.mensagem = mensagem;
 	}
-	
-	public String getMensagem() {
-        return mensagem;
-    }
 }

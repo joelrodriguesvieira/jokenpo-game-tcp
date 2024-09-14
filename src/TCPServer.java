@@ -51,46 +51,54 @@ public class TCPServer {
                 enviarResultado(outPlayer2, resultado, jogada1, jogada2);
 
                 // Perguntar aos jogadores se querem jogar novamente
-                outPlayer1.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem());
-                outPlayer2.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem());
+                outPlayer1.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE);
+                outPlayer2.writeObject(MensagemEnum.PERGUNTARJOGARNOVAMENTE);
                 outPlayer1.flush();
                 outPlayer2.flush();
 
-                // Coletar respostas dos dois jogadores
-                RespostaEnum resposta1 = (RespostaEnum) inPlayer1.readObject();
-                RespostaEnum resposta2 = (RespostaEnum) inPlayer2.readObject();
+                Object resposta1 = inPlayer1.readObject();
+                Object resposta2 = inPlayer2.readObject();
+                
+                if(resposta1 instanceof RespostaEnum && resposta2 instanceof RespostaEnum) {
+                	// Coletar respostas dos dois jogadores
+                	RespostaEnum respostaEnum1 = (RespostaEnum) resposta1;
+                	RespostaEnum respostaEnum2 = (RespostaEnum) resposta2; 
+                	
+                	jogarNovamente = respostaEnum1 == RespostaEnum.SIM && respostaEnum2 == RespostaEnum.SIM;
+
+                    if (!jogarNovamente) {
+                        if (respostaEnum1 == RespostaEnum.SIM && respostaEnum2 == RespostaEnum.NÃO) {
+                            outPlayer1.writeObject(MensagemEnum.REJEITARJOGADA);
+                            outPlayer1.flush();
+                        } else if (respostaEnum2 == RespostaEnum.SIM && respostaEnum1 == RespostaEnum.NÃO) {
+                            outPlayer2.writeObject(MensagemEnum.REJEITARJOGADA);
+                            outPlayer2.flush();
+                        }
+
+                    } else {
+                    	// Reiniciar estado das jogadas
+                        jogada1 = new Jogada();
+                        jogada2 = new Jogada();
+
+                        // Reiniciar as threads para capturar novas jogadas
+                        player1Thread = new Thread(new PlayerHandler(player1Socket, "Jogador 1", jogada1, outPlayer1, inPlayer1));
+                        player2Thread = new Thread(new PlayerHandler(player2Socket, "Jogador 2", jogada2, outPlayer2, inPlayer2));
+
+                        player1Thread.start();
+                        player2Thread.start();
+                    	
+                    }
+                }
+                
 
                 // Verificar se ambos os jogadores querem continuar
-                jogarNovamente = resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.SIM;
-
-                if (!jogarNovamente) {
-                    if (resposta1 == RespostaEnum.SIM && resposta2 == RespostaEnum.NÃO) {
-                        outPlayer1.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
-                        outPlayer1.flush();
-                    } else if (resposta2 == RespostaEnum.SIM && resposta1 == RespostaEnum.NÃO) {
-                        outPlayer2.writeObject(MensagemEnum.REJEITARJOGADA.getMensagem());
-                        outPlayer2.flush();
-                    }
-
-                } else {
-                	// Reiniciar estado das jogadas
-                    jogada1 = new Jogada();
-                    jogada2 = new Jogada();
-
-                    // Reiniciar as threads para capturar novas jogadas
-                    player1Thread = new Thread(new PlayerHandler(player1Socket, "Jogador 1", jogada1, outPlayer1, inPlayer1));
-                    player2Thread = new Thread(new PlayerHandler(player2Socket, "Jogador 2", jogada2, outPlayer2, inPlayer2));
-
-                    player1Thread.start();
-                    player2Thread.start();
-                	
-                }
+                
 
             }
 
             // Enviar mensagem de encerramento
-            outPlayer1.writeObject(MensagemEnum.MESSAGEMFINAL.getMensagem());
-            outPlayer2.writeObject(MensagemEnum.MESSAGEMFINAL.getMensagem());
+            outPlayer1.writeObject(MensagemEnum.MESSAGEMFINAL);
+            outPlayer2.writeObject(MensagemEnum.MESSAGEMFINAL);
             outPlayer1.flush();
             outPlayer2.flush();
 
@@ -105,14 +113,13 @@ public class TCPServer {
 
     private static String determinarVencedor(Jogada jogada1, Jogada jogada2) {
         if (jogada1 == null || jogada2 == null) {
-            return MensagemEnum.JOGADAINVALIDAJOGADORES.getMensagem();
+            return MensagemEnum.JOGADAINVALIDAJOGADORES.mensagem;
         }
         
         JogadaEnum escolha1 = jogada1.getEscolha();
         JogadaEnum escolha2 = jogada2.getEscolha();
         
         if (escolha1 == escolha2) {
-        	// enum jogada aqui
             return "Empate!";
         }
         
@@ -124,7 +131,7 @@ public class TCPServer {
         case TESOURA:
             return (escolha2 == JogadaEnum.PAPEL) ? jogada1.getJogador() + " venceu!" : jogada2.getJogador() + " venceu!";
         default:
-            return MensagemEnum.JOGADAINVALIDA.getMensagem();
+            return MensagemEnum.JOGADAINVALIDA.mensagem;
     }
     }
 
@@ -134,7 +141,7 @@ public class TCPServer {
             out.writeObject("Jogada do " + jogada2.getJogador() + ": " + jogada2.getEscolha());
             out.writeObject(resultado);
         } else {
-            out.writeObject(MensagemEnum.JOGOINCOMPLETO.getMensagem());
+            out.writeObject(MensagemEnum.JOGOINCOMPLETO);
         }
         out.flush();
     }

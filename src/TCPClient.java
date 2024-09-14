@@ -20,44 +20,58 @@ public class TCPClient {
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
             BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
 
-            Object serverMessage;
             while (true) {
                 try {
-                    serverMessage = input.readObject();
+                    Object serverMessage = input.readObject();
                     if (serverMessage == null) break;
-                    System.out.println("Server: " + serverMessage);
                     
-                    if (serverMessage.equals(MensagemEnum.COMANDOJOGADA.getMensagem())) {
-                    	String jogadaEscolha;
-                        JogadaEnum jogadaEnum = null;
-                        
-                        while (jogadaEnum == null) {
-                            jogadaEscolha = consoleInput.readLine().toUpperCase();
+                    if(serverMessage instanceof MensagemEnum) {
+                    	MensagemEnum mensagem = (MensagemEnum) serverMessage;
+                    	System.out.println("Server: " + mensagem.mensagem);
+                    	
+                    	if (serverMessage.equals(MensagemEnum.COMANDOJOGADA)) {
+                        	String jogadaEscolha;
+                            JogadaEnum jogadaEnum = null;
                             
-                            try {
-                                jogadaEnum = JogadaEnum.valueOf(jogadaEscolha);
-                                output.writeObject(jogadaEnum);
-                                output.flush();
-                            } catch (IllegalArgumentException e) {
-                                System.out.println("Jogada inválida. Escolha entre PEDRA, PAPEL ou TESOURA.");
+                            while (jogadaEnum == null) {
+                                jogadaEscolha = consoleInput.readLine().toUpperCase();
+//                                System.out.println(jogadaEscolha);
+                                
+                                try {
+                                    jogadaEnum = JogadaEnum.valueOf(jogadaEscolha);
+                                    
+                                    if(jogadaEnum instanceof JogadaEnum) {
+//                                    	System.out.println("jogadaEnum é objeto");
+                                    }
+                                    
+                                    output.writeObject(jogadaEnum);
+                                    output.flush();
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Jogada inválida. Escolha entre PEDRA, PAPEL ou TESOURA.");
+                                }
                             }
+                        } else if (serverMessage.equals(MensagemEnum.PERGUNTARJOGARNOVAMENTE)) {
+                        	String respostaString;
+                        	RespostaEnum respostaEnum = null;
+                        	while(respostaEnum == null) {
+                        		respostaString = consoleInput.readLine().toUpperCase();
+                        		
+                        		try {
+                        			respostaEnum = RespostaEnum.valueOf(respostaString);
+                        			output.writeObject(respostaEnum);
+                        			output.flush();
+    								
+    							} catch (IllegalArgumentException e) {
+    								System.out.println("Resposta inválida. Escolha entre SIM ou NÃO.");
+    							}
+                        	}    
                         }
-                    } else if (serverMessage.equals(MensagemEnum.PERGUNTARJOGARNOVAMENTE.getMensagem())) {
-                    	String respostaString;
-                    	RespostaEnum respostaEnum = null;
-                    	while(respostaEnum == null) {
-                    		respostaString = consoleInput.readLine().toUpperCase();
-                    		
-                    		try {
-                    			respostaEnum = RespostaEnum.valueOf(respostaString);
-                    			output.writeObject(respostaEnum);
-                    			output.flush();
-								
-							} catch (IllegalArgumentException e) {
-								System.out.println("Resposta inválida. Escolha entre SIM ou NÃO.");
-							}
-                    	}    
+                    } else {
+                    	System.out.println(serverMessage);
                     }
+                    
+                    
+                    
                 } catch (EOFException e) {
                     System.out.println("Conexão encerrada pelo servidor.");
                     break;

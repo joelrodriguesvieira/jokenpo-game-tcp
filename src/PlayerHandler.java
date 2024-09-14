@@ -27,21 +27,31 @@ class PlayerHandler implements Runnable {
             boolean jogadaValida = false;
 
             while (!jogadaValida) {
-            	out.writeObject(MensagemEnum.COMANDOJOGADA.getMensagem());
+            	out.writeObject(MensagemEnum.COMANDOJOGADA);
                 out.flush();
-
-                try {
-                	JogadaEnum escolha = (JogadaEnum) in.readObject();
-
-                    jogada.setJogador(jogador);
-                    jogada.setEscolha(escolha);
-                    jogadaValida = true;
-
-                } catch (IllegalArgumentException e) {
-                	out.writeObject(MensagemEnum.JOGADAINVALIDA.getMensagem());
-                    out.writeObject(MensagemEnum.COMANDOJOGADA.getMensagem());
-                    out.flush();
-                }
+                
+                Object object = in.readObject();
+//                System.out.println(object);
+                
+                if(object instanceof JogadaEnum) {
+                	try {
+                		JogadaEnum escolha = (JogadaEnum) object;                	
+                		
+                		jogada.setJogador(jogador);
+                		jogada.setEscolha(escolha);
+//                		System.out.println("A jogada foi válida!");
+                		jogadaValida = true;
+                		
+                	} catch (IllegalArgumentException e) {
+                		out.writeObject(MensagemEnum.JOGADAINVALIDA);
+                		out.writeObject(MensagemEnum.COMANDOJOGADA);
+                		out.flush();
+                	}                	
+                } 
+//                else {
+//                	System.out.println("Não chegou como jogadaEnum");
+//                }
+                
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
